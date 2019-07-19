@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Connect to MongoDB
 mongoose
   .connect(
-    'mongodb://mongo:27017/docker-node-mongo',
+    'mongodb://db:27017/test',
     { useNewUrlParser: true }
   )
   .then(() => console.log('MongoDB Connected'))
@@ -26,11 +26,17 @@ app.get('/', (req, res) => {
 });
 
 app.post('/item/add', (req, res) => {
+  if (!req.body.name) {
+    return res.status(400).json({ msg: 'name is required' })
+  }
   const newItem = new Item({
     name: req.body.name
   });
 
-  newItem.save().then(item => res.redirect('/'));
+  newItem.
+    save()
+    .then(item => res.redirect('/'))
+    .catch(err => res.status(404).json({ msg: 'fail to save new item' }));;
 });
 
 const port = 3000;
